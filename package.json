@@ -1,0 +1,26 @@
+{
+  "name": "espressologic",
+  "version": "0.1.0",
+  "description": "A rapid development node sdk for API's built with Espresso Logic services.",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt eslo-unit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EspressoLogicCafe/npm-espressologic.git"
+  },
+  "keywords": [
+    "Espresso",
+    "Logic"
+  ],
+  "author": "espressologic",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/EspressoLogicCafe/npm-espressologic/issues"
+  },
+  "dependencies": {
+    "q": "~1.0.1",
+    "underscore": "~1.7.0"
+  }
+}
