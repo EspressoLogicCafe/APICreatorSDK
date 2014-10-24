@@ -1,5 +1,5 @@
 ##Espresso Logic
-[Espresso Logic](http://espressologic.com) is the fastest way to create REST APIs with your data. You can join data across multiple data sources, write declartive rules, and define granular security for an API that deploys in the time it takes to scan the schema!
+[Espresso Logic](http://espressologic.com) is the fastest way to create REST APIs with your data. You can join data across multiple data sources, write declaretive rules, and define granular security for an API that deploys in the time it takes to scan the schema!
 
 ### Installation
 After registering for a free account @ http://espressologic.com, our node SDK library can be implemented for use via the install command
