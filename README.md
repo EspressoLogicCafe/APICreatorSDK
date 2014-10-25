@@ -17,10 +17,10 @@ var espressologic, api;
 espressologic = require('espressologic');
 
 //via a username and password
-api = espressologic.connect('https://eval.espressologic.com/rest/livedemo/demo', 'demo', 'Password1');
+api = espressologic.connect('https://eval.espressologic.com/rest/livedemo/demo/v1', 'demo', 'Password1');
 
 //or with an API key
-api = espressologic.connect('https://eval.espressologic.com/rest/livedemo/demo', 'readonly');
+api = espressologic.connect('https://eval.espressologic.com/rest/livedemo/demo/v1', 'readonly');
 ```
 
 Espresso builds an API around the tables and relationships it finds in your database. Once connected, your project endpoints are accessible in an easy to use format:
@@ -31,7 +31,7 @@ espressologic = require('espressologic');
 
 //API endpoints follow a simple structure: {projectUrl}/{databasePrefix}:{tableName}
 //a full endpoint might look like this "https://eval.espressologic.com/rest/livedemo/demo/v1/demo:customer"
-api = espressologic.connect('https://eval.espressologic.com/rest/livedemo/demo', 'demo', 'Password1');
+api = espressologic.connect('https://eval.espressologic.com/rest/livedemo/demo/v1', 'demo', 'Password1');
 
 var customers;
 customers = api.endpoint('demo:customer');

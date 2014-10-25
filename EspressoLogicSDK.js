@@ -8,23 +8,78 @@ module.exports = (function () {
 	querystring = require('querystring');
 
 	SDK = {
+		/**
+		* The base project url. This attribute is initialized during a SDK.connect(url, ...) method
+		*/
 		url: null,
+
+		/**
+		* The plain API key.
+		* This attribute is initialized during a SDK.connect(url, ...) method,
+		* either from having been passed directly, or after a username/password request has succeeded.
+		*/
 		apiKey: null,
+
+		/**
+		* The username passed to SDK.connect(url, username, password)
+		*/
 		username: null,
+
+		/**
+		* The password passed to SDK.connect(url, username, password)
+		*/
 		password: null,
+
+		/**
+		* The url object resulting from URL.parse(url).
+		* After SDK.connect() succeeds, additional parameters are added (ex: SDK.params.headers)
+		*/
 		params: null, //produced by _.pick(URL.parse(url), 'host', 'path', 'port')
+
+		/**
+		* The promise set by SDK.connect(), used internally to verify an API key exists
+		* before making requests
+		*/
 		connection: null,
+
+		/**
+		* A placeholder or the node packages http and https.
+		* If the project is accessible through https, req is updated during SDK.connect()
+		*/
 		req: http,
-		headers: {'X-EspressoLogic-ResponseFormat':'json'},
+		
+		/**
+		* Default request headers set for SDK.endpoint() methods [get(), post(), put(), del()]
+		*/
+		headers: {'X-EspressoLogic-ResponseFormat':'json', 'Content-Type':'application/json'},
+		
+		/**
+		* Default filters supplementing an SDK.endpoint().get(filters) request
+		*/
 		filters: {},
+		
+		/**
+		* The endpoint for a user to authenticate
+		*/
 		authEndpoint: '/@authentication',
 
+		/**
+		* Convenience function testing a string for ":"
+		*/
 		isUrlWithPort: function (host) {
 			return host.match('\:');
 		},
+
+		/**
+		* Convenience function for retrieving the first element of a url that include a port
+		*/
 		stripUrlPort: function (host) {
 			return host.split(':')[0];
 		},
+
+		/**
+		* Removes the first and last "/"
+		*/
 		stripWrappingSlashes: function (str) {
 			return str.replace(/^\/|\/$/g, '');
 		},
@@ -33,10 +88,12 @@ module.exports = (function () {
 		*
 		*/
 		connect: function (url, key, password) {
-			var deferred, options, headers;
+			var deferred, options, headers, espresso;
+			espresso = this;
 			this.url = this.stripWrappingSlashes(url);
-			this.params = _.pick(this.url.parse(url), 'host', 'path', 'port');
+			this.params = _.pick(URL.parse(url), 'host', 'path', 'port');
 			this.params.headers = {};
+
 
 			if (url.match('https')) {
 				this.req = https;
@@ -60,8 +117,8 @@ module.exports = (function () {
 					res.setEncoding('utf8');
 					res.on('data', function (data) {
 						data = JSON.parse(data);
-						this.apiKey = data.apikey;
-						this.params.headers.Authorization = 'Espresso ' + data.apikey + ':1';
+						espresso.apiKey = data.apikey;
+						espresso.params.headers.Authorization = 'Espresso ' + data.apikey + ':1';
 						deferred.resolve();
 					});
 				});
@@ -80,6 +137,9 @@ module.exports = (function () {
 			return _.extend({}, SDK);
 		},
 
+		/**
+		*
+		*/
 		setOptions: function (params, override) {
 			if (!override) {
 				override = {};
@@ -87,6 +147,9 @@ module.exports = (function () {
 			return _.extend(params, this.params, override);
 		},
 
+		/**
+		*
+		*/
 		setHeaders: function (options) {
 			if (options.headers) {
 				var headers = options.headers;
@@ -95,30 +158,39 @@ module.exports = (function () {
 			return options;
 		},
 
+		/**
+		*
+		*/
 		setFilters: function (filters) {
-			headers = _.extend(filters, this.filters);
-			return options;
+			filters = _.extend(filters, this.filters);
+			return filters;
 		},
 
+		/**
+		*
+		*/
 		setPageSize: function (num) {
 			this.filters.pagesize = num;
 		},
 
+		/**
+		*
+		*/
 		endpoint: function (endpoint, options) {
 			var url, urlParams, prefix;
 			prefix = '';
-			if (endpoint.substr(0) == '/') {
+			if (endpoint.substr(0) != '/') {
 				prefix = '/';
 			}
-			endpoint = prefix SDK.stripWrappingSlashes(endpoint);
+			endpoint = prefix + this.stripWrappingSlashes(endpoint);
 			url = URL.parse(endpoint);
-			urlParams = {};
 			if (url && url.host) {
 				urlParams = _.pick(URL.parse(url), 'host', 'path', 'port');
 				if (SDK.isUrlWithPort(urlParams.host)) {
 					urlParams.host = SDK.stripUrlPort(urlParams.host);
 				}
 			}
+
 			var espresso = this;
 
 			return {
@@ -126,7 +198,10 @@ module.exports = (function () {
 					var deferred;
 					deferred = Q.defer();
 					if (filters) {
-						filters = espresso.setFilters(filters);
+						filters = querystring.stringify(filters);
+					}
+					else {
+						filters = espresso.setFilters({});
 						filters = querystring.stringify(filters);
 					}
 					espresso.connection.then(function () {
@@ -135,10 +210,18 @@ module.exports = (function () {
 						options = espresso.setHeaders(options);
 
 						options.path += endpoint;
-						options.search = '?' + filters;
+						options.path += '?' + filters;
+
 						var req = espresso.req.request(options, function (res) {
+							var data = '';
 							res.setEncoding('utf8');
-							res.on('data', function (data) {
+							res.on('data', function (chunk) {
+								if (chunk) {
+									data += chunk;
+								}
+							});
+							res.on('end', function (info) {
+								data = JSON.parse(data);
 								deferred.resolve(data);
 							});
 						});
@@ -147,6 +230,7 @@ module.exports = (function () {
 						req.on('error', function(e) {
 							deferred.reject(e);
 						});
+
 					});
 					return deferred.promise;
 				},
@@ -160,8 +244,15 @@ module.exports = (function () {
 						options = espresso.setHeaders(options);
 						options.path += endpoint;
 						var req = espresso.req.request(options, function (res) {
+							var data = '';
 							res.setEncoding('utf8');
-							res.on('data', function (data) {
+							res.on('data', function (chunk) {
+								if (chunk) {
+									data += chunk;
+								}
+							});
+							res.on('end', function (info) {
+								data = JSON.parse(data);
 								deferred.resolve(data);
 							});
 						});
@@ -183,8 +274,15 @@ module.exports = (function () {
 						options = espresso.setHeaders(options);
 						options.path += endpoint;
 						var req = espresso.req.request(options, function (res) {
+							var data = '';
 							res.setEncoding('utf8');
-							res.on('data', function (data) {
+							res.on('data', function (chunk) {
+								if (chunk) {
+									data += chunk;
+								}
+							});
+							res.on('end', function (info) {
+								data = JSON.parse(data);
 								deferred.resolve(data);
 							});
 						});
@@ -206,8 +304,15 @@ module.exports = (function () {
 						options = espresso.setHeaders(options);
 						options.path += endpoint;
 						var req = espresso.req.request(options, function (res) {
+							var data = '';
 							res.setEncoding('utf8');
-							res.on('data', function (data) {
+							res.on('data', function (chunk) {
+								if (chunk) {
+									data += chunk;
+								}
+							});
+							res.on('end', function (info) {
+								data = JSON.parse(data);
 								deferred.resolve(data);
 							});
 						});
