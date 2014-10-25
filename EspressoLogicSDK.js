@@ -1,7 +1,8 @@
 module.exports = (function () {
-	var SDK, Q, http, _, querystring;
+	var SDK, Q, http, https, _, querystring;
 	Q = require('Q');
 	http = require('http');
+	https = require('https');
 	URL = require('url');
 	_ = require('underscore');
 	querystring = require('querystring');
@@ -13,6 +14,9 @@ module.exports = (function () {
 		password: null,
 		params: null, //produced by _.pick(URL.parse(url), 'host', 'path', 'port')
 		connection: null,
+		req: http,
+		headers: {'X-EspressoLogic-ResponseFormat':'json'},
+		filters: {},
 		authEndpoint: '/@authentication',
 
 		isUrlWithPort: function (host) {
@@ -21,36 +25,43 @@ module.exports = (function () {
 		stripUrlPort: function (host) {
 			return host.split(':')[0];
 		},
+		stripWrappingSlashes: function (str) {
+			return str.replace(/^\/|\/$/g, '');
+		},
 
 		/**
 		*
 		*/
 		connect: function (url, key, password) {
 			var deferred, options, headers;
-			SDK.url = url;
-			SDK.params = _.pick(URL.parse(url), 'host', 'path', 'port');
-			SDK.params.headers = {};
+			this.url = this.stripWrappingSlashes(url);
+			this.params = _.pick(this.url.parse(url), 'host', 'path', 'port');
+			this.params.headers = {};
+
+			if (url.match('https')) {
+				this.req = https;
+			}
 
 			//passed a url with a defined port
-			if (SDK.isUrlWithPort(SDK.params.host)) {
-				SDK.params.host = SDK.stripUrlPort(SDK.params.host);
+			if (this.isUrlWithPort(this.params.host)) {
+				this.params.host = this.stripUrlPort(this.params.host);
 			}
 			deferred = Q.defer();
-			SDK.connection = deferred.promise;
+			this.connection = deferred.promise;
 
 			//Is this a username/password combo
 			if (password) {
-				options = SDK.setOptions({method: 'POST'});
-				options.path += SDK.authEndpoint;
-				var req = http.request(options, function (res) {
+				options = this.setOptions({method: 'POST'});
+				options.path += this.authEndpoint;
+				var req = this.req.request(options, function (res) {
 					if (res.statusCode == 503) {
 						deferred.reject(res.statusCode);
 					}
 					res.setEncoding('utf8');
 					res.on('data', function (data) {
 						data = JSON.parse(data);
-						SDK.apiKey = data.apikey;
-						SDK.params.headers.Authorization = 'Espresso ' + data.apikey + ':1';
+						this.apiKey = data.apikey;
+						this.params.headers.Authorization = 'Espresso ' + data.apikey + ':1';
 						deferred.resolve();
 					});
 				});
@@ -61,23 +72,45 @@ module.exports = (function () {
 				});
 			} else {
 				//SDK.connect was directly passed an API key
-				SDK.apiKey = key;
-				SDK.params.headers.Authorization = 'Espresso ' + key + ':1';
+				this.apiKey = key;
+				this.params.headers.Authorization = 'Espresso ' + key + ':1';
 				deferred.resolve();
 			}
 
-			return SDK.connection;
+			return _.extend({}, SDK);
 		},
 
 		setOptions: function (params, override) {
 			if (!override) {
 				override = {};
 			}
-			return _.extend(params, SDK.params, override);
+			return _.extend(params, this.params, override);
+		},
+
+		setHeaders: function (options) {
+			if (options.headers) {
+				var headers = options.headers;
+				headers = _.extend(headers, this.headers);
+			}
+			return options;
+		},
+
+		setFilters: function (filters) {
+			headers = _.extend(filters, this.filters);
+			return options;
+		},
+
+		setPageSize: function (num) {
+			this.filters.pagesize = num;
 		},
 
 		endpoint: function (endpoint, options) {
-			var url, urlParams;
+			var url, urlParams, prefix;
+			prefix = '';
+			if (endpoint.substr(0) == '/') {
+				prefix = '/';
+			}
+			endpoint = prefix SDK.stripWrappingSlashes(endpoint);
 			url = URL.parse(endpoint);
 			urlParams = {};
 			if (url && url.host) {
@@ -86,21 +119,24 @@ module.exports = (function () {
 					urlParams.host = SDK.stripUrlPort(urlParams.host);
 				}
 			}
+			var espresso = this;
 
 			return {
 				get: function (filters) {
 					var deferred;
 					deferred = Q.defer();
 					if (filters) {
+						filters = espresso.setFilters(filters);
 						filters = querystring.stringify(filters);
 					}
-					SDK.connection.then(function () {
+					espresso.connection.then(function () {
 						var options;
-						options = SDK.setOptions({method: 'GET'}, urlParams);
+						options = espresso.setOptions({method: 'GET'}, urlParams);
+						options = espresso.setHeaders(options);
 
 						options.path += endpoint;
 						options.search = '?' + filters;
-						var req = http.request(options, function (res) {
+						var req = espresso.req.request(options, function (res) {
 							res.setEncoding('utf8');
 							res.on('data', function (data) {
 								deferred.resolve(data);
@@ -118,11 +154,12 @@ module.exports = (function () {
 				put: function (body, params) {
 					var deferred;
 					deferred = Q.defer();
-					SDK.connection.then(function () {
+					espresso.connection.then(function () {
 						var options;
-						options = SDK.setOptions({method: 'PUT'}, urlParams);
+						options = espresso.setOptions({method: 'PUT'}, urlParams);
+						options = espresso.setHeaders(options);
 						options.path += endpoint;
-						var req = http.request(options, function (res) {
+						var req = espresso.req.request(options, function (res) {
 							res.setEncoding('utf8');
 							res.on('data', function (data) {
 								deferred.resolve(data);
@@ -140,11 +177,12 @@ module.exports = (function () {
 				post: function (body, params) {
 					var deferred;
 					deferred = Q.defer();
-					SDK.connection.then(function () {
+					espresso.connection.then(function () {
 						var options;
-						options = SDK.setOptions({method: 'POST'}, urlParams);
+						options = espresso.setOptions({method: 'POST'}, urlParams);
+						options = espresso.setHeaders(options);
 						options.path += endpoint;
-						var req = http.request(options, function (res) {
+						var req = espresso.req.request(options, function (res) {
 							res.setEncoding('utf8');
 							res.on('data', function (data) {
 								deferred.resolve(data);
@@ -162,11 +200,12 @@ module.exports = (function () {
 				del: function (body, params) {
 					var deferred;
 					deferred = Q.defer();
-					SDK.connection.then(function () {
+					espresso.connection.then(function () {
 						var options;
-						options = SDK.setOptions({method: 'DELETE'}, urlParams);
+						options = espresso.setOptions({method: 'DELETE'}, urlParams);
+						options = espresso.setHeaders(options);
 						options.path += endpoint;
-						var req = http.request(options, function (res) {
+						var req = espresso.req.request(options, function (res) {
 							res.setEncoding('utf8');
 							res.on('data', function (data) {
 								deferred.resolve(data);
