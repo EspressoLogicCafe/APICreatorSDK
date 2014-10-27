@@ -85,7 +85,13 @@ module.exports = (function () {
 		},
 
 		/**
+		* The default method of connecting to an Espresso API. Returns an instance of this library
+		* and initializes a promise used to make requests on API endpoints.
 		*
+		* @param string url the Espresso API url base
+		* @param string key an API key, typically found in Logic Designer's Security section. When connecting
+		* with a username/password, this second argument is a username
+		* @param string password an optional argument when using espressologic.connect() with a user/password combination 
 		*/
 		connect: function (url, key, password) {
 			var deferred, options, headers, espresso;
@@ -128,7 +134,7 @@ module.exports = (function () {
 					deferred.reject('Authentication failed, please confirm the username and/or password');
 				});
 			} else {
-				//SDK.connect was directly passed an API key
+				//espressologic.connect() was directly passed an API key
 				this.apiKey = key;
 				this.params.headers.Authorization = 'Espresso ' + key + ':1';
 				deferred.resolve();
@@ -138,7 +144,7 @@ module.exports = (function () {
 		},
 
 		/**
-		*
+		* Internal method used to merge default espressologic.params options with those passed in via params
 		*/
 		setOptions: function (params, override) {
 			if (!override) {
@@ -148,7 +154,10 @@ module.exports = (function () {
 		},
 
 		/**
+		* Internal method for merging espressologic.headers attributes with those passed in via headers.
 		*
+		* @param object options a collection of URL.parse(url) attributes, which may or may not contain options.headers
+		* @param object headers a collection of header attributes to be appended to the request
 		*/
 		setHeaders: function (options, headers) {
 			if (!headers) { headers = {}; }
@@ -160,35 +169,40 @@ module.exports = (function () {
 		},
 
 		/**
-		*
+		* Internal method for merging espressologic.filters attributes with those passed in via filters
 		*/
 		setFilters: function (filters) {
-			filters = _.extend(filters, this.filters);
+			filters = _.extend({}, this.filters, filters);
 			return filters;
 		},
 
 		/**
-		*
+		* A convenience function for setting the default pagesize filter. Overriden by filters passed to endpoint objects.
 		*/
 		setPageSize: function (num) {
 			this.filters.pagesize = num;
 		},
 
 		/**
-		*
+		* A method for stringifying a filters collection
 		*/
 		formatFilters: function (filters) {
 			if (filters) {
 				filters = querystring.stringify(filters);
 			}
 			else {
-				filters = espresso.setFilters({});
+				filters = this.setFilters({});
 				filters = querystring.stringify(filters);
 			}
 		},
 
 		/**
-		*
+		* The default method used to make requests to specific endpoints.
+		* espressologic.endpoint() returns an endpoint object with the following methods:
+		* espressologic.endpoint().get(filters, headers) - returning a promise of a GET request
+		* espressologic.endpoint().post(data, filters, headers) - returning a promise of a POST request
+		* espressologic.endpoint().put(data, filters, headers) - returning a promise of a PUT request
+		* espressologic.endpoint().del(data, filters, headers) - returning a promise of a DELETE request
 		*/
 		endpoint: function (endpoint, options) {
 			var url, urlParams, prefix;

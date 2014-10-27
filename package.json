@@ -1,8 +1,8 @@
 {
   "name": "espressologic",
-  "version": "1.0.0",
+  "version": "1.2.1",
   "description": "A rapid development node sdk for API's built with Espresso Logic services.",
-  "main": "index.js",
+  "main": "EspressoLogicSDK.js",
   "scripts": {
     "test": "grunt eslo-unit"
   },

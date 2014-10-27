@@ -1,5 +1,5 @@
 ##Espresso Logic
-[Espresso Logic](http://espressologic.com) is the fastest way to create REST APIs with your data. You can join data across multiple data sources, write declarative rules, and define granular security for an API that deploys in the time it takes to scan the schema. For more information about this SDK, please visit our [doc center](https://sites.google.com/a/espressologic.com/site/node-sdk).
+[Espresso Logic](http://espressologic.com) is the fastest way to create REST APIs with your data. You can join data across multiple data sources, write declarative rules, and define granular security for an API that deploys in the time it takes to scan the schema. For more information about this SDK, please visit our [doc center](https://sites.google.com/a/espressologic.com/site/docs/live-api/node-sdk).
 
 ### Installation
 The SDK library is installed as we might expect, from a simple npm install command:
@@ -30,11 +30,11 @@ var espressologic, api;
 espressologic = require('espressologic');
 
 //API endpoints follow a simple structure: {projectUrl}/{databasePrefix}:{tableName}
-//a full endpoint might look like this "https://eval.espressologic.com/rest/livedemo/demo/v1/demo:customer"
+//a full endpoint might look like this "https://eval.espressologic.com/rest/livedemo/demo/v1/customer"
 api = espressologic.connect('https://eval.espressologic.com/rest/livedemo/demo/v1', 'demo', 'Password1');
 
 var customers;
-customers = api.endpoint('demo:customer');
+customers = api.endpoint('customer');
 
 customers.get().then(function (data) {
 	console.log(data); //an array of objects from our customers table
@@ -45,7 +45,7 @@ The customers.get() method refers to the http request method, and PUT/POST/DELET
 
 ```
 var customers, newCustomer;
-customers = api.endpoint('/demo:customers');
+customers = api.endpoint('/customers');
 alphaCustomer = {
     name: "Alpha",
     credit_limit: "1234"
