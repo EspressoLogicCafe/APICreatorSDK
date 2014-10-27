@@ -150,10 +150,11 @@ module.exports = (function () {
 		/**
 		*
 		*/
-		setHeaders: function (options) {
+		setHeaders: function (options, headers) {
+			if (!headers) { headers = {}; }
 			if (options.headers) {
 				var headers = options.headers;
-				headers = _.extend(headers, this.headers);
+				headers = _.extend(headers, this.headers, headers);
 			}
 			return options;
 		},
@@ -171,6 +172,19 @@ module.exports = (function () {
 		*/
 		setPageSize: function (num) {
 			this.filters.pagesize = num;
+		},
+
+		/**
+		*
+		*/
+		formatFilters: function (filters) {
+			if (filters) {
+				filters = querystring.stringify(filters);
+			}
+			else {
+				filters = espresso.setFilters({});
+				filters = querystring.stringify(filters);
+			}
 		},
 
 		/**
@@ -194,20 +208,14 @@ module.exports = (function () {
 			var espresso = this;
 
 			return {
-				get: function (filters) {
+				get: function (filters, headers) {
 					var deferred;
 					deferred = Q.defer();
-					if (filters) {
-						filters = querystring.stringify(filters);
-					}
-					else {
-						filters = espresso.setFilters({});
-						filters = querystring.stringify(filters);
-					}
+					filters = espresso.formatFilters(filters);
 					espresso.connection.then(function () {
 						var options;
 						options = espresso.setOptions({method: 'GET'}, urlParams);
-						options = espresso.setHeaders(options);
+						options = espresso.setHeaders(options, headers);
 
 						options.path += endpoint;
 						options.path += '?' + filters;
@@ -235,13 +243,14 @@ module.exports = (function () {
 					return deferred.promise;
 				},
 
-				put: function (body, params) {
+				put: function (body, filters, headers) {
 					var deferred;
 					deferred = Q.defer();
+					filters = espresso.formatFilters(filters);
 					espresso.connection.then(function () {
 						var options;
 						options = espresso.setOptions({method: 'PUT'}, urlParams);
-						options = espresso.setHeaders(options);
+						options = espresso.setHeaders(options, headers);
 						options.path += endpoint;
 						var req = espresso.req.request(options, function (res) {
 							var data = '';
@@ -265,13 +274,14 @@ module.exports = (function () {
 					return deferred.promise;
 				},
 
-				post: function (body, params) {
+				post: function (body, filters, headers) {
 					var deferred;
 					deferred = Q.defer();
+					filters = espresso.formatFilters(filters);
 					espresso.connection.then(function () {
 						var options;
 						options = espresso.setOptions({method: 'POST'}, urlParams);
-						options = espresso.setHeaders(options);
+						options = espresso.setHeaders(options, headers);
 						options.path += endpoint;
 						var req = espresso.req.request(options, function (res) {
 							var data = '';
@@ -295,13 +305,14 @@ module.exports = (function () {
 					return deferred.promise;
 				},
 
-				del: function (body, params) {
+				del: function (body, filters, headers) {
 					var deferred;
 					deferred = Q.defer();
+					filters = espresso.formatFilters(filters);
 					espresso.connection.then(function () {
 						var options;
 						options = espresso.setOptions({method: 'DELETE'}, urlParams);
-						options = espresso.setHeaders(options);
+						options = espresso.setHeaders(options, headers);
 						options.path += endpoint;
 						var req = espresso.req.request(options, function (res) {
 							var data = '';

@@ -1,6 +1,6 @@
 {
   "name": "espressologic",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "A rapid development node sdk for API's built with Espresso Logic services.",
   "main": "index.js",
   "scripts": {

@@ -1,8 +1,8 @@
 ##Espresso Logic
-[Espresso Logic](http://espressologic.com) is the fastest way to create REST APIs with your data. You can join data across multiple data sources, write declaretive rules, and define granular security for an API that deploys in the time it takes to scan the schema.
+[Espresso Logic](http://espressologic.com) is the fastest way to create REST APIs with your data. You can join data across multiple data sources, write declarative rules, and define granular security for an API that deploys in the time it takes to scan the schema. For more information about this SDK, please visit our [doc center](https://sites.google.com/a/espressologic.com/site/node-sdk).
 
 ### Installation
-After registering for a free account @ http://espressologic.com, our node SDK library can be implemented for use via the install command
+The SDK library is installed as we might expect, from a simple npm install command:
 
 ```
 npm install espressologic
@@ -10,7 +10,7 @@ npm install espressologic
 
 ### Getting Started
 
-Connecting to an existing project is as easy as:
+Connecting to an existing project is done via the espressologic.connect() method. Here we are connecting to a sample API which is available as a sandbox for exploring the basics:
 
 ```javascript
 var espressologic, api;
@@ -41,11 +41,11 @@ customers.get().then(function (data) {
 });
 ```
 
-The customers.get() method refers to the http request method, so PUT/POST/DELETE requests look very similar.
+The customers.get() method refers to the http request method, and PUT/POST/DELETE requests will look very similar (though, for these requests, we invite you to register for an account @ [Espresso Logic](http://www.espressologic.com/)).
 
 ```
 var customers, newCustomer;
-customers = espressologic.endpoint('/demo:customers');
+customers = api.endpoint('/demo:customers');
 alphaCustomer = {
     name: "Alpha",
     credit_limit: "1234"
