@@ -194,6 +194,7 @@ module.exports = (function () {
 				filters = this.setFilters({});
 				filters = querystring.stringify(filters);
 			}
+			return filters;
 		},
 
 		/**

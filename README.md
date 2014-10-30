@@ -51,8 +51,8 @@ alphaCustomer = {
     credit_limit: "1234"
 };
 
-//PUT
-customers.put(alphaCustomer, params).then(function (txSummary) {
+//POST
+customers.post(alphaCustomer, params).then(function (txSummary) {
 	console.log(txSummary); //an array of objects updated
 });
 
@@ -64,9 +64,9 @@ customers.get().then(function (data) {
 	//the most useful to us here is the endpoint href
     var alphaEndpoint = espressologic.endpoint(data[0]['@metadata'].href);
 	
-	//POST
+	//PUT
     	data[0].name = 'Alpha Updated';
-    	alphaEndpoint.post(data[0]).then(function(txSummary) {
+    	alphaEndpoint.put(data[0]).then(function(txSummary) {
     	    console.log(txSummary);
 	    });
 	    
