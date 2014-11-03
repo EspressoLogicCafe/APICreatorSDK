@@ -207,16 +207,21 @@ module.exports = (function () {
 		*/
 		endpoint: function (endpoint, options) {
 			var url, urlParams, prefix;
+			urlParams = {};
+			url = '';
 			prefix = '';
 			if (endpoint.substr(0) != '/') {
-				prefix = '/';
-			}
-			endpoint = prefix + this.stripWrappingSlashes(endpoint);
-			url = URL.parse(endpoint);
-			if (url && url.host) {
-				urlParams = _.pick(URL.parse(url), 'host', 'path', 'port');
-				if (SDK.isUrlWithPort(urlParams.host)) {
-					urlParams.host = SDK.stripUrlPort(urlParams.host);
+				url = URL.parse(endpoint);
+				if (url && url.host) {
+					urlParams = _.pick(URL.parse(url), 'host', 'path', 'port');
+					endpoint = '';
+					if (SDK.isUrlWithPort(urlParams.host)) {
+						urlParams.host = SDK.stripUrlPort(urlParams.host);
+					}
+				}
+				else {
+					prefix = '/';
+					endpoint = prefix + this.stripWrappingSlashes(endpoint);
 				}
 			}
 
@@ -233,8 +238,10 @@ module.exports = (function () {
 						options = espresso.setHeaders(options, headers);
 
 						options.path += endpoint;
-						options.path += '?' + filters;
-
+						if (filters) {
+							options.path += '?' + filters;
+						}
+						options.path = options.path.replace(/\%27/g, "'");
 						var req = espresso.req.request(options, function (res) {
 							var data = '';
 							res.setEncoding('utf8');
@@ -267,6 +274,10 @@ module.exports = (function () {
 						options = espresso.setOptions({method: 'PUT'}, urlParams);
 						options = espresso.setHeaders(options, headers);
 						options.path += endpoint;
+						if (filters) {
+							options.path += '?' + filters;
+						}
+						options.path = options.path.replace(/\%27/g, "'");
 						var req = espresso.req.request(options, function (res) {
 							var data = '';
 							res.setEncoding('utf8');
@@ -298,6 +309,10 @@ module.exports = (function () {
 						options = espresso.setOptions({method: 'POST'}, urlParams);
 						options = espresso.setHeaders(options, headers);
 						options.path += endpoint;
+						if (filters) {
+							options.path += '?' + filters;
+						}
+						options.path = options.path.replace(/\%27/g, "'");
 						var req = espresso.req.request(options, function (res) {
 							var data = '';
 							res.setEncoding('utf8');
@@ -329,6 +344,10 @@ module.exports = (function () {
 						options = espresso.setOptions({method: 'DELETE'}, urlParams);
 						options = espresso.setHeaders(options, headers);
 						options.path += endpoint;
+						if (filters) {
+							options.path += '?' + filters;
+						}
+						options.path = options.path.replace(/\%27/g, "'");
 						var req = espresso.req.request(options, function (res) {
 							var data = '';
 							res.setEncoding('utf8');
