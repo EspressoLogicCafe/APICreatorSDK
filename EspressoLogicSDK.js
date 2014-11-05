@@ -291,7 +291,7 @@ module.exports = (function () {
 								deferred.resolve(data);
 							});
 						});
-						req.end(body);
+						req.end(JSON.stringify(body));
 
 						req.on('error', function(e) {
 							deferred.reject(e);
@@ -338,6 +338,8 @@ module.exports = (function () {
 				del: function (body, filters, headers) {
 					var deferred;
 					deferred = Q.defer();
+					if (!filters) {filters = {};}
+					filters.checksum = body['@metadata'].checksum;
 					filters = espresso.formatFilters(filters);
 					espresso.connection.then(function () {
 						var options;
@@ -361,7 +363,8 @@ module.exports = (function () {
 								deferred.resolve(data);
 							});
 						});
-						req.end(JSON.stringify(body));
+						//req.end(JSON.stringify(body));
+						req.end();
 
 						req.on('error', function(e) {
 							deferred.reject(e);
