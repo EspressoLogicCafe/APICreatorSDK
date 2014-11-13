@@ -1,6 +1,6 @@
 {
   "name": "espressologic",
-  "version": "1.2.3",
+  "version": "1.2.8",
   "description": "A rapid development node sdk for API's built with Espresso Logic services.",
   "main": "EspressoLogicSDK.js",
   "scripts": {
@@ -12,7 +12,22 @@
   },
   "keywords": [
     "Espresso",
-    "Logic"
+    "Logic",
+    "Espresso Logic",
+    "REST",
+    "API",
+    "RESTful",
+    "database",
+    "sql",
+    "mysql",
+    "oracle",
+    "nosql",
+    "postgres",
+    "mongo",
+    "sqlserver",
+    "mobile",
+    "reactive",
+    "strongloop"
   ],
   "author": "espressologic",
   "license": "BSD",
