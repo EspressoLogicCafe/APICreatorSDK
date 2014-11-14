@@ -252,7 +252,14 @@ module.exports = (function () {
 							});
 							res.on('end', function (info) {
 								data = JSON.parse(data);
-								deferred.resolve(data);
+								if (res.statusCode > 299) {
+									//response codes 300+ indicate an error
+									deferred.reject(data);
+								}
+								else {
+									//status ok
+									deferred.resolve(data);
+								}
 							});
 						});
 						req.end();
@@ -288,7 +295,14 @@ module.exports = (function () {
 							});
 							res.on('end', function (info) {
 								data = JSON.parse(data);
-								deferred.resolve(data);
+								if (res.statusCode > 299) {
+									//response codes 300+ indicate an error
+									deferred.reject(data);
+								}
+								else {
+									//status ok
+									deferred.resolve(data);
+								}
 							});
 						});
 						req.end(JSON.stringify(body));
@@ -323,7 +337,14 @@ module.exports = (function () {
 							});
 							res.on('end', function (info) {
 								data = JSON.parse(data);
-								deferred.resolve(data);
+								if (res.statusCode > 299) {
+									//response codes 300+ indicate an error
+									deferred.reject(data);
+								}
+								else {
+									//status ok
+									deferred.resolve(data);
+								}
 							});
 						});
 						req.end(JSON.stringify(body));
@@ -360,7 +381,14 @@ module.exports = (function () {
 							});
 							res.on('end', function (info) {
 								data = JSON.parse(data);
-								deferred.resolve(data);
+								if (res.statusCode > 299) {
+									//response codes 300+ indicate an error
+									deferred.reject(data);
+								}
+								else {
+									//status ok
+									deferred.resolve(data);
+								}
 							});
 						});
 						//req.end(JSON.stringify(body));
