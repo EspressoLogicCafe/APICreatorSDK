@@ -8,6 +8,7 @@ module.exports = (function () {
 	querystring = require('querystring');
 
 	SDK = {
+		debug: false,
 		/**
 		* The base project url. This attribute is initialized during a SDK.connect(url, ...) method
 		*/
@@ -67,6 +68,7 @@ module.exports = (function () {
 		* Convenience function testing a string for ":"
 		*/
 		isUrlWithPort: function (host) {
+			if (!host) { return host; }
 			return host.match('\:');
 		},
 
@@ -95,28 +97,28 @@ module.exports = (function () {
 		*/
 		connect: function (url, key, password) {
 			var deferred, options, headers, espresso;
-			espresso = this;
-			this.url = this.stripWrappingSlashes(url);
-			this.params = _.pick(URL.parse(url), 'host', 'path', 'port');
-			this.params.headers = {};
+			espresso = _.extend({}, SDK);
+			espresso.url = this.stripWrappingSlashes(url);
+			espresso.params = _.pick(URL.parse(url), 'host', 'path', 'port');
+			espresso.params.headers = {};
 
 
 			if (url.match('https')) {
-				this.req = https;
+				espresso.req = https;
 			}
 
 			//passed a url with a defined port
-			if (this.isUrlWithPort(this.params.host)) {
-				this.params.host = this.stripUrlPort(this.params.host);
+			if (espresso.isUrlWithPort(espresso.params.host)) {
+				espresso.params.host = espresso.stripUrlPort(espresso.params.host);
 			}
 			deferred = Q.defer();
-			this.connection = deferred.promise;
+			espresso.connection = deferred.promise;
 
 			//Is this a username/password combo
 			if (password) {
-				options = this.setOptions({method: 'POST'});
-				options.path += this.authEndpoint;
-				var req = this.req.request(options, function (res) {
+				options = espresso.setOptions({method: 'POST'});
+				options.path += espresso.authEndpoint;
+				var req = espresso.req.request(options, function (res) {
 					if (res.statusCode == 503) {
 						deferred.reject(res.statusCode);
 					}
@@ -135,12 +137,17 @@ module.exports = (function () {
 				});
 			} else {
 				//espressologic.connect() was directly passed an API key
-				this.apiKey = key;
-				this.params.headers.Authorization = 'Espresso ' + key + ':1';
+				espresso.apiKey = key;
+				espresso.params.headers.Authorization = 'Espresso ' + key + ':1';
 				deferred.resolve();
 			}
+			return espresso;
+		},
 
-			return _.extend({}, SDK);
+		log: function (output) {
+			if (this.debug) {
+				console.log(output);
+			}
 		},
 
 		/**
@@ -212,11 +219,12 @@ module.exports = (function () {
 			prefix = '';
 			if (endpoint.substr(0) != '/') {
 				url = URL.parse(endpoint);
-				if (url && url.host) {
+				//is this possibly a full url?
+				if (url && url.path && url.host) {
 					urlParams = _.pick(URL.parse(url), 'host', 'path', 'port');
 					endpoint = '';
-					if (SDK.isUrlWithPort(urlParams.host)) {
-						urlParams.host = SDK.stripUrlPort(urlParams.host);
+					if (this.isUrlWithPort(urlParams.host)) {
+						urlParams.host = this.stripUrlPort(urlParams.host);
 					}
 				}
 				else {
