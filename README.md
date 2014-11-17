@@ -10,7 +10,7 @@ npm install espressologic
 
 ### Up and Running
 
-After installation, we invite you to give the library a try:
+After installation, we invite you to give the library a try. Here we're connecting to a sample project, but the data and API are all real:
 
 ```javascript
 var espressologic = require('espressologic');
