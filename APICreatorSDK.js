@@ -8,14 +8,14 @@ module.exports = (function () {
 	querystring = require('querystring');
 
 	SDK = {
-		debug: false,
+		debug: true,
 		/**
 		* The base project url. This attribute is initialized during a SDK.connect(url, ...) method
 		*/
 		url: null,
 
 		/**
-		* The plain API key.
+		* The plain Auth Token (apikey).
 		* This attribute is initialized during a SDK.connect(url, ...) method,
 		* either from having been passed directly, or after a username/password request has succeeded.
 		*/
@@ -52,7 +52,7 @@ module.exports = (function () {
 		/**
 		* Default request headers set for SDK.endpoint() methods [get(), post(), put(), del()]
 		*/
-		headers: {'X-EspressoLogic-ResponseFormat':'json', 'Content-Type':'application/json'},
+		headers: {'X-liveapicreatorLogic-ResponseFormat':'json', 'Content-Type':'application/json'},
 		
 		/**
 		* Default filters supplementing an SDK.endpoint().get(filters) request
@@ -87,46 +87,46 @@ module.exports = (function () {
 		},
 
 		/**
-		* The default method of connecting to an Espresso API. Returns an instance of this library
+		* The default method of connecting to an API. Returns an instance of this library
 		* and initializes a promise used to make requests on API endpoints.
 		*
-		* @param string url the Espresso API url base
+		* @param string url the API url base
 		* @param string key an API key, typically found in Logic Designer's Security section. When connecting
 		* with a username/password, this second argument is a username
-		* @param string password an optional argument when using espressologic.connect() with a user/password combination 
+		* @param string password an optional argument when using liveapicreatorlogic.connect() with a user/password combination 
 		*/
 		connect: function (url, key, password) {
-			var deferred, options, headers, espresso;
-			espresso = _.extend({}, SDK);
-			espresso.url = this.stripWrappingSlashes(url);
-			espresso.params = _.pick(URL.parse(url), 'host', 'path', 'port');
-			espresso.params.headers = {};
+			var deferred, options, headers, liveapicreator;
+			liveapicreator = _.extend({}, SDK);
+			liveapicreator.url = this.stripWrappingSlashes(url);
+			liveapicreator.params = _.pick(URL.parse(url), 'host', 'path', 'port');
+			liveapicreator.params.headers = {};
 
 
 			if (url.match('https')) {
-				espresso.req = https;
+				liveapicreator.req = https;
 			}
 
 			//passed a url with a defined port
-			if (espresso.isUrlWithPort(espresso.params.host)) {
-				espresso.params.host = espresso.stripUrlPort(espresso.params.host);
+			if (liveapicreator.isUrlWithPort(liveapicreator.params.host)) {
+				liveapicreator.params.host = liveapicreator.stripUrlPort(liveapicreator.params.host);
 			}
 			deferred = Q.defer();
-			espresso.connection = deferred.promise;
+			liveapicreator.connection = deferred.promise;
 
 			//Is this a username/password combo
 			if (password) {
-				options = espresso.setOptions({method: 'POST'});
-				options.path += espresso.authEndpoint;
-				var req = espresso.req.request(options, function (res) {
+				options = liveapicreator.setOptions({method: 'POST'});
+				options.path += liveapicreator.authEndpoint;
+				var req = liveapicreator.req.request(options, function (res) {
 					if (res.statusCode == 503) {
 						deferred.reject(res.statusCode);
 					}
 					res.setEncoding('utf8');
 					res.on('data', function (data) {
 						data = JSON.parse(data);
-						espresso.apiKey = data.apikey;
-						espresso.params.headers.Authorization = 'Espresso ' + data.apikey + ':1';
+						liveapicreator.apiKey = data.apikey;
+						liveapicreator.params.headers.Authorization = 'CALiveAPICreator ' + data.apikey + ':1';
 						deferred.resolve();
 					});
 				});
@@ -136,12 +136,12 @@ module.exports = (function () {
 					deferred.reject('Authentication failed, please confirm the username and/or password');
 				});
 			} else {
-				//espressologic.connect() was directly passed an API key
-				espresso.apiKey = key;
-				espresso.params.headers.Authorization = 'Espresso ' + key + ':1';
+				//liveapicreatorlogic.connect() was directly passed an API key
+				liveapicreator.apiKey = key;
+				liveapicreator.params.headers.Authorization = 'CALiveAPICreator ' + key + ':1';
 				deferred.resolve();
 			}
-			return espresso;
+			return liveapicreator;
 		},
 
 		log: function (output) {
@@ -151,7 +151,7 @@ module.exports = (function () {
 		},
 
 		/**
-		* Internal method used to merge default espressologic.params options with those passed in via params
+		* Internal method used to merge default liveapicreatorlogic.params options with those passed in via params
 		*/
 		setOptions: function (params, override) {
 			if (!override) {
@@ -161,7 +161,7 @@ module.exports = (function () {
 		},
 
 		/**
-		* Internal method for merging espressologic.headers attributes with those passed in via headers.
+		* Internal method for merging liveapicreatorlogic.headers attributes with those passed in via headers.
 		*
 		* @param object options a collection of URL.parse(url) attributes, which may or may not contain options.headers
 		* @param object headers a collection of header attributes to be appended to the request
@@ -176,7 +176,7 @@ module.exports = (function () {
 		},
 
 		/**
-		* Internal method for merging espressologic.filters attributes with those passed in via filters
+		* Internal method for merging liveapicreatorlogic.filters attributes with those passed in via filters
 		*/
 		setFilters: function (filters) {
 			filters = _.extend({}, this.filters, filters);
@@ -206,11 +206,11 @@ module.exports = (function () {
 
 		/**
 		* The default method used to make requests to specific endpoints.
-		* espressologic.endpoint() returns an endpoint object with the following methods:
-		* espressologic.endpoint().get(filters, headers) - returning a promise of a GET request
-		* espressologic.endpoint().post(data, filters, headers) - returning a promise of a POST request
-		* espressologic.endpoint().put(data, filters, headers) - returning a promise of a PUT request
-		* espressologic.endpoint().del(data, filters, headers) - returning a promise of a DELETE request
+		* liveapicreatorlogic.endpoint() returns an endpoint object with the following methods:
+		* liveapicreatorlogic.endpoint().get(filters, headers) - returning a promise of a GET request
+		* liveapicreatorlogic.endpoint().post(data, filters, headers) - returning a promise of a POST request
+		* liveapicreatorlogic.endpoint().put(data, filters, headers) - returning a promise of a PUT request
+		* liveapicreatorlogic.endpoint().del(data, filters, headers) - returning a promise of a DELETE request
 		*/
 		endpoint: function (endpoint, options) {
 			var url, urlParams, prefix;
@@ -233,24 +233,24 @@ module.exports = (function () {
 				}
 			}
 
-			var espresso = this;
+			var liveapicreator = this;
 
 			return {
 				get: function (filters, headers) {
 					var deferred;
 					deferred = Q.defer();
-					filters = espresso.formatFilters(filters);
-					espresso.connection.then(function () {
+					filters = liveapicreator.formatFilters(filters);
+					liveapicreator.connection.then(function () {
 						var options;
-						options = espresso.setOptions({method: 'GET'}, urlParams);
-						options = espresso.setHeaders(options, headers);
+						options = liveapicreator.setOptions({method: 'GET'}, urlParams);
+						options = liveapicreator.setHeaders(options, headers);
 
 						options.path += endpoint;
 						if (filters) {
 							options.path += '?' + filters;
 						}
 						options.path = options.path.replace(/\%27/g, "'");
-						var req = espresso.req.request(options, function (res) {
+						var req = liveapicreator.req.request(options, function (res) {
 							var data = '';
 							res.setEncoding('utf8');
 							res.on('data', function (chunk) {
@@ -283,17 +283,17 @@ module.exports = (function () {
 				put: function (body, filters, headers) {
 					var deferred;
 					deferred = Q.defer();
-					filters = espresso.formatFilters(filters);
-					espresso.connection.then(function () {
+					filters = liveapicreator.formatFilters(filters);
+					liveapicreator.connection.then(function () {
 						var options;
-						options = espresso.setOptions({method: 'PUT'}, urlParams);
-						options = espresso.setHeaders(options, headers);
+						options = liveapicreator.setOptions({method: 'PUT'}, urlParams);
+						options = liveapicreator.setHeaders(options, headers);
 						options.path += endpoint;
 						if (filters) {
 							options.path += '?' + filters;
 						}
 						options.path = options.path.replace(/\%27/g, "'");
-						var req = espresso.req.request(options, function (res) {
+						var req = liveapicreator.req.request(options, function (res) {
 							var data = '';
 							res.setEncoding('utf8');
 							res.on('data', function (chunk) {
@@ -325,17 +325,17 @@ module.exports = (function () {
 				post: function (body, filters, headers) {
 					var deferred;
 					deferred = Q.defer();
-					filters = espresso.formatFilters(filters);
-					espresso.connection.then(function () {
+					filters = liveapicreator.formatFilters(filters);
+					liveapicreator.connection.then(function () {
 						var options;
-						options = espresso.setOptions({method: 'POST'}, urlParams);
-						options = espresso.setHeaders(options, headers);
+						options = liveapicreator.setOptions({method: 'POST'}, urlParams);
+						options = liveapicreator.setHeaders(options, headers);
 						options.path += endpoint;
 						if (filters) {
 							options.path += '?' + filters;
 						}
 						options.path = options.path.replace(/\%27/g, "'");
-						var req = espresso.req.request(options, function (res) {
+						var req = liveapicreator.req.request(options, function (res) {
 							var data = '';
 							res.setEncoding('utf8');
 							res.on('data', function (chunk) {
@@ -369,17 +369,17 @@ module.exports = (function () {
 					deferred = Q.defer();
 					if (!filters) {filters = {};}
 					filters.checksum = body['@metadata'].checksum;
-					filters = espresso.formatFilters(filters);
-					espresso.connection.then(function () {
+					filters = liveapicreator.formatFilters(filters);
+					liveapicreator.connection.then(function () {
 						var options;
-						options = espresso.setOptions({method: 'DELETE'}, urlParams);
-						options = espresso.setHeaders(options, headers);
+						options = liveapicreator.setOptions({method: 'DELETE'}, urlParams);
+						options = liveapicreator.setHeaders(options, headers);
 						options.path += endpoint;
 						if (filters) {
 							options.path += '?' + filters;
 						}
 						options.path = options.path.replace(/\%27/g, "'");
-						var req = espresso.req.request(options, function (res) {
+						var req = liveapicreator.req.request(options, function (res) {
 							var data = '';
 							res.setEncoding('utf8');
 							res.on('data', function (chunk) {

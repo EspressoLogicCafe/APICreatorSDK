@@ -1,11 +1,11 @@
-##Espresso Logic
-[Espresso Logic](http://espressologic.com) is the fastest way to create REST APIs across your various data sources including SQL and NoSQL databases. You can join data across multiple data sources and write declarative/reactive programming rules that are adhered to by your REST API. Security access for resources can be as broad or granular as needed, from complete access to row and column level control. And it all deploys in the time it's taken to read about it. For more information about this SDK, please visit our [doc center](https://sites.google.com/a/espressologic.com/site/docs/live-api/node-sdk).
+##CA Live API Creator
+[CA Live API Creator](http://transform.ca.com/CA-Live-API-Creator.html) is the fastest way to create REST APIs across your various data sources including SQL and NoSQL databases. You can join data across multiple data sources and write declarative/reactive programming rules that are adhered to by your REST API. Security access for resources can be as broad or granular as needed, from complete access to row and column level control. And it all deploys in the time it's taken to read about it. For more information about this SDK, please visit our [doc center](https://ca-doc.espressologic.com/docs/live-api/node-sdk).
 
 ### Installation
 The SDK library is installed as we might expect, from a simple npm install command:
 
 ```
-npm install espressologic
+npm install 
 ```
 
 ### Up and Running
@@ -13,40 +13,41 @@ npm install espressologic
 After installation, we invite you to give the library a try. Here we're connecting to a sample project, but the data and API are all real:
 
 ```javascript
-var espressologic = require('espressologic');
-var api = espressologic.connect('https://eval.espressologic.com/rest/livedemo/demo/v1', 'readonly');
-api.endpoint('customer').get().then(function (data) {
+'use strict';
+var apicreator = require('./APICreatorSDK');
+var api = apicreator.connect('http://localhost:8080/APIServer/rest/default/demo/v1', 'demo', 'Password1');
+api.endpoint('demo:customer').get().then(function (data) {
 	console.log(data);
 });
 ```
 
 ### Getting Started
 
-Connecting to an existing project is done via the espressologic.connect() method. Here we are connecting to a sample API which is available as a sandbox for exploring the basics:
+Connecting to an existing project is done via the apicreator.connect() method. Here we are connecting to a sample API which is available as a sandbox for exploring the basics:
 
 ```javascript
-var espressologic, api;
-espressologic = require('espressologic');
+var apicreator, api;
+apicreator = require('./APICreatorSDK');
 
 //via a username and password
-api = espressologic.connect('https://eval.espressologic.com/rest/livedemo/demo/v1', 'demo', 'Password1');
+api = apicreator.connect('https://localhost:8080/APIServer/rest/default/demo/v1', 'demo', 'Password1');
 
 //or with an API key
-api = espressologic.connect('https://eval.espressologic.com/rest/livedemo/demo/v1', 'readonly');
+api = apicreator.connect('https://localhost:8080/APIServer/rest/default/demo/v1', 'readonly');
 ```
 
-Espresso builds an API around the tables and relationships it finds in your database. Once connected, your project endpoints are accessible in an easy to use format:
+API Creator builds an API around the tables and relationships it finds in your database. Once connected, your project endpoints are accessible in an easy to use format:
 
 ```javascript
-var espressologic, api;
-espressologic = require('espressologic');
+var apicreator, api;
+apicreator = require('.\APICreatorSDK');
 
 //API endpoints follow a simple structure: {projectUrl}/{databasePrefix}:{tableName}
 //a full endpoint might look like this "https://eval.espressologic.com/rest/livedemo/demo/v1/customer"
-api = espressologic.connect('https://eval.espressologic.com/rest/livedemo/demo/v1', 'demo', 'Password1');
+api = espressologic.connect('https://localhost:8080/APIServer/rest/default/demo/v1', 'demo', 'Password1');
 
 var customers;
-customers = api.endpoint('customer');
+customers = api.endpoint('demo:customer');
 
 customers.get().then(function (data) {
 	console.log(data); //an array of objects from our customers table

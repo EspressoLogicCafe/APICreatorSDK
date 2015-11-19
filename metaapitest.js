@@ -1,11 +1,11 @@
 'use strict';
-var espressologic = require('./EspressoLogicSDK');
-//espressologic = require('espressologic');
+var apilivecreator = require('./APICreatorSDK');
+
 
 //API endpoints follow a simple structure: {projectUrl}/{databasePrefix}:{tableName}
-//a full endpoint might look like this "http://eval.espressologic.com/rest/livedemo/demo/v1/customer"
+//a full endpoint might look like this "http://eval.apilivecreator.com/rest/livedemo/demo/v1/customer"
 
-var api = espressologic.connect('http://{myservername}/rest/{projecturl}/{project}/v1', 'demo', 'Password1');
+var api = apilivecreator.connect('http://{myservername}/rest/{projecturl}/{project}/v1', 'demo', 'Password1');
 
 //LIST OF All PROJECT TABLES & COLUMNS
 var tables = api.endpoint('@tables');///*?projectId=1001') returns all tables and collumns for project
