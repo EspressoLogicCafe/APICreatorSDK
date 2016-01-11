@@ -194,7 +194,10 @@ module.exports = (function () {
 		* A method for stringifying a filters collection
 		*/
 		formatFilters: function (filters) {
-			if (filters) {
+			if (typeof filters == "string") {
+				return filters.replace(" ", "%20");
+			}
+			else if (filters) {
 				filters = querystring.stringify(filters);
 			}
 			else {
