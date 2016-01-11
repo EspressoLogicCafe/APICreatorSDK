@@ -1,6 +1,6 @@
 {
-  "name": "liveapicreator",
-  "version": "1.3.5",
+  "name": "caliveapicreator",
+  "version": "1.3.6",
   "description": "A rapid development node sdk for API's built with API Creator services.",
   "main": "APICreatorSDK.js",
   "scripts": {
