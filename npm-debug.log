@@ -1,0 +1,114 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/Cellar/node/4.1.1/bin/node',
+1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli   'publish' ]
+2 info using npm@2.14.4
+3 info using node@v4.1.1
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/Users/holmi11/Documents/nodes/caliveapicreator',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /Users/holmi11/.npm/liveapicreator/1.3.4/package.tgz not in flight; packing
+9 verbose tar pack [ '/Users/holmi11/.npm/liveapicreator/1.3.4/package.tgz',
+9 verbose tar pack   '/Users/holmi11/Documents/nodes/caliveapicreator' ]
+10 verbose tarball /Users/holmi11/.npm/liveapicreator/1.3.4/package.tgz
+11 verbose folder /Users/holmi11/Documents/nodes/caliveapicreator
+12 info prepublish liveapicreator@1.3.4
+13 verbose addLocalTarball adding from inside cache /Users/holmi11/.npm/liveapicreator/1.3.4/package.tgz
+14 silly cache afterAdd liveapicreator@1.3.4
+15 verbose afterAdd /Users/holmi11/.npm/liveapicreator/1.3.4/package/package.json not in flight; writing
+16 verbose afterAdd /Users/holmi11/.npm/liveapicreator/1.3.4/package/package.json written
+17 silly publish { name: 'liveapicreator',
+17 silly publish   version: '1.3.4',
+17 silly publish   description: 'A rapid development node sdk for API\'s built with API Creator services.',
+17 silly publish   main: 'APICreatorSDK.js',
+17 silly publish   scripts: { test: 'grunt eslo-unit' },
+17 silly publish   repository:
+17 silly publish    { type: 'git',
+17 silly publish      url: 'git+https://github.com/EspressoLogicCafe/npm-espressologic.git' },
+17 silly publish   keywords:
+17 silly publish    [ 'Espresso',
+17 silly publish      'Logic',
+17 silly publish      'Espresso Logic',
+17 silly publish      'Live API Creator',
+17 silly publish      'REST',
+17 silly publish      'API',
+17 silly publish      'RESTful',
+17 silly publish      'database',
+17 silly publish      'sql',
+17 silly publish      'mysql',
+17 silly publish      'oracle',
+17 silly publish      'nosql',
+17 silly publish      'postgres',
+17 silly publish      'mongo',
+17 silly publish      'sqlserver',
+17 silly publish      'mobile',
+17 silly publish      'reactive',
+17 silly publish      'strongloop' ],
+17 silly publish   author: { name: 'espressologic' },
+17 silly publish   license: 'BSD',
+17 silly publish   bugs: { url: 'https://github.com/EspressoLogicCafe/npm-espressologic/issues' },
+17 silly publish   dependencies: { q: '~1.0.1', underscore: '~1.7.0' },
+17 silly publish   readme: '##CA Live API Creator\n[CA Live API Creator](http://transform.ca.com/CA-Live-API-Creator.html) is the fastest way to create REST APIs across your various data sources including SQL and NoSQL databases. You can join data across multiple data sources and write declarative/reactive programming rules that are adhered to by your REST API. Security access for resources can be as broad or granular as needed, from complete access to row and column level control. And it all deploys in the time it\'s taken to read about it. For more information about this SDK, please visit our [doc center](http://ca-doc.espressologic.com/docs/live-api/node-sdk).\n\n### Installation\nThe SDK library is installed as we might expect, from a simple npm install command:\n\n```\nnpm install caliveapicreator\n```\n\n### Up and Running\n\nAfter installation, we invite you to give the library a try. Here we\'re connecting to a sample project, but the data and API are all real:\n\n```javascript\n\'use strict\';\nvar apicreator = require(\'./APICreatorSDK\');\nvar api = apicreator.connect(\'http://localhost:8080/APIServer/rest/default/demo/v1\', \'demo\', \'Password1\');\napi.endpoint(\'demo:customer\').get().then(function (data) {\n\tconsole.log(data);\n});\n```\n\n### Getting Started\n\nConnecting to an existing project is done via the apicreator.connect() method. Here we are connecting to a sample API which is available as a sandbox for exploring the basics:\n\n```javascript\nvar apicreator, api;\napicreator = require(\'./APICreatorSDK\');\n\n//via a username and password\napi = apicreator.connect(\'https://localhost:8080/APIServer/rest/default/demo/v1\', \'demo\', \'Password1\');\n\n//or with an API key\napi = apicreator.connect(\'https://localhost:8080/APIServer/rest/default/demo/v1\', \'readonly\');\n```\n\nAPI Creator builds an API around the tables and relationships it finds in your database. Once connected, your project endpoints are accessible in an easy to use format:\n\n```javascript\nvar apicreator, api;\napicreator = require(\'.\\APICreatorSDK\');\n\n//API endpoints follow a simple structure: {projectUrl}/{databasePrefix}:{tableName}\n//a full endpoint might look like this "https://eval.espressologic.com/rest/livedemo/demo/v1/customer"\napi = espressologic.connect(\'https://localhost:8080/APIServer/rest/default/demo/v1\', \'demo\', \'Password1\');\n\nvar customers;\ncustomers = api.endpoint(\'demo:customer\');\n\ncustomers.get().then(function (data) {\n\tconsole.log(data); //an array of objects from our customers table\n});\n```\n\nThe customers.get() method refers to the http request method, and PUT/POST/DELETE requests will look very similar (though, for these requests, we invite you to register for an account @ [Espresso Logic](http://www.espressologic.com/)).\n\n```\nvar customers, newCustomer;\ncustomers = api.endpoint(\'/customers\');\nalphaCustomer = {\n    name: "Alpha",\n    credit_limit: "1234"\n};\n\n//POST\ncustomers.post(alphaCustomer, params).then(function (txSummary) {\n\tconsole.log(txSummary); //an array of objects updated\n});\n\n//GET\ncustomers.get().then(function (data) {\n\tconsole.log(data); //an array which will now include customer: Alpha\n\t\n\t//objects returned include metadata specific to each record,\n\t//the most useful to us here is the endpoint href\n    var alphaEndpoint = espressologic.endpoint(data[0][\'@metadata\'].href);\n\t\n\t//PUT\n    \tdata[0].name = \'Alpha Updated\';\n    \talphaEndpoint.put(data[0]).then(function(txSummary) {\n    \t    console.log(txSummary);\n\t    });\n\t    \n\t//DELETE\n    \talphaEndpoint.delete(data[0]).then(function(txSummary) {\n    \t    console.log(txSummary);\n\t    });\n});\n```\n',
+17 silly publish   readmeFilename: 'README.md',
+17 silly publish   gitHead: '3c64c8a1a273b0a4fe9a30074abbbf725c093a10',
+17 silly publish   homepage: 'https://github.com/EspressoLogicCafe/npm-espressologic#readme',
+17 silly publish   _id: 'liveapicreator@1.3.4',
+17 silly publish   _shasum: 'e4049ef3ce1b1e5c593046109bed52991f3d1613',
+17 silly publish   _from: '.' }
+18 verbose getPublishConfig undefined
+19 silly mapToRegistry name liveapicreator
+20 silly mapToRegistry using default registry
+21 silly mapToRegistry registry https://registry.npmjs.org/
+22 silly mapToRegistry uri https://registry.npmjs.org/liveapicreator
+23 verbose publish registryBase https://registry.npmjs.org/
+24 silly publish uploading /Users/holmi11/.npm/liveapicreator/1.3.4/package.tgz
+25 verbose request uri https://registry.npmjs.org/liveapicreator
+26 verbose request sending authorization for write operation
+27 info attempt registry request try #1 at 2:19:43 PM
+28 verbose request using bearer token for auth
+29 verbose request id 17b9453a5c8606be
+30 http request PUT https://registry.npmjs.org/liveapicreator
+31 http 403 https://registry.npmjs.org/liveapicreator
+32 verbose headers { 'content-type': 'application/json',
+32 verbose headers   'cache-control': 'max-age=300',
+32 verbose headers   'content-length': '95',
+32 verbose headers   'accept-ranges': 'bytes',
+32 verbose headers   date: 'Mon, 11 Jan 2016 22:18:01 GMT',
+32 verbose headers   via: '1.1 varnish',
+32 verbose headers   connection: 'keep-alive',
+32 verbose headers   'x-served-by': 'cache-sjc3130-SJC',
+32 verbose headers   'x-cache': 'MISS',
+32 verbose headers   'x-cache-hits': '0',
+32 verbose headers   'x-timer': 'S1452550680.824474,VS0,VE190' }
+33 verbose request invalidating /Users/holmi11/.npm/registry.npmjs.org/liveapicreator on PUT
+34 error publish Failed PUT 403
+35 verbose stack Error: "You cannot publish over the previously published version 1.3.4." : liveapicreator
+35 verbose stack     at makeError (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:263:12)
+35 verbose stack     at CachingRegistryClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:251:14)
+35 verbose stack     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:171:14)
+35 verbose stack     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:198:22)
+35 verbose stack     at emitTwo (events.js:87:13)
+35 verbose stack     at Request.emit (events.js:172:7)
+35 verbose stack     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1073:14)
+35 verbose stack     at emitOne (events.js:82:20)
+35 verbose stack     at Request.emit (events.js:169:7)
+35 verbose stack     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1019:12)
+36 verbose statusCode 403
+37 verbose pkgid liveapicreator
+38 verbose cwd /Users/holmi11/Documents/nodes/caliveapicreator
+39 error Darwin 14.5.0
+40 error argv "/usr/local/Cellar/node/4.1.1/bin/node" "/usr/local/bin/npm" "publish"
+41 error node v4.1.1
+42 error npm  v2.14.4
+43 error code E403
+44 error "You cannot publish over the previously published version 1.3.4." : liveapicreator
+45 error If you need help, you may report this error at:
+45 error     <https://github.com/npm/npm/issues>
+46 verbose exit [ 1, true ]
