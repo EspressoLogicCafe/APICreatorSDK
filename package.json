@@ -1,20 +1,17 @@
 {
-  "name": "caliveapicreator",
-  "version": "1.3.6",
-  "description": "A rapid development node sdk for API's built with API Creator services.",
+  "name": "APICreatorSDK",
+  "version": "1.3.8",
+  "description": "A rapid development node sdk for API's for CA Live API Creator REST API services.",
   "main": "APICreatorSDK.js",
   "scripts": {
     "test": "grunt eslo-unit"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/EspressoLogicCafe/npm-espressologic.git"
+    "url": "https://github.com/EspressoLogicCafe/APICreatorSDK.git"
   },
   "keywords": [
-    "Espresso",
-    "Logic",
-    "Espresso Logic",
-    "Live API Creator",
+    "CA Live API Creator",
     "REST",
     "API",
     "RESTful",
@@ -26,14 +23,15 @@
     "postgres",
     "mongo",
     "sqlserver",
+    "db2luw",
+    "postgresql",
     "mobile",
-    "reactive",
-    "strongloop"
+    "reactive"
   ],
-  "author": "espressologic",
+  "author": "CA Technologies",
   "license": "BSD",
   "bugs": {
-    "url": "https://github.com/EspressoLogicCafe/npm-espressologic/issues"
+    "url": "https://github.com/EspressoLogicCafe/APICreatorSDK/issues"
   },
   "dependencies": {
     "q": "~1.0.1",
