@@ -5,7 +5,7 @@
 The SDK library is installed as we might expect, from a simple npm install command:
 
 ```
-npm install caliveapicreator
+npm install APICreatorSDK
 ```
 
 ### Up and Running
