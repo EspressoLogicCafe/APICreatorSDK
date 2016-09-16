@@ -1,6 +1,6 @@
 module.exports = (function () {
 	var SDK, Q, http, https, _, querystring;
-	Q = require('Q');
+	Q = require('q');
 	http = require('http');
 	https = require('https');
 	URL = require('url');
@@ -117,6 +117,7 @@ module.exports = (function () {
 			//Is this a username/password combo
 			if (password) {
 				options = liveapicreator.setOptions({method: 'POST'});
+				options.headers['Content-Type'] ='application/json';
 				options.path += liveapicreator.authEndpoint;
 				var req = liveapicreator.req.request(options, function (res) {
 					if (res.statusCode == 503) {
