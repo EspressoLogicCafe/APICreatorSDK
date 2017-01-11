@@ -8,7 +8,10 @@ module.exports = (function () {
 	querystring = require('querystring');
 
 	SDK = {
-		debug: true,
+		/**
+		* 	CA Live API Creator SDK from CA Technologies, Inc.  2017 (c)
+		*/
+		debug: false,
 		/**
 		* The base project url. This attribute is initialized during a SDK.connect(url, ...) method
 		*/
@@ -55,7 +58,7 @@ module.exports = (function () {
 		headers: {'X-liveapicreatorLogic-ResponseFormat':'json', 'Content-Type':'application/json'},
 		
 		/**
-		* Default filters supplementing an SDK.endpoint().get(filters) request
+		* Default filters supplementing an SDK.endpoint().get(filters) request - e.g. sysfilter=equal(colname:value)
 		*/
 		filters: {},
 		
@@ -90,10 +93,11 @@ module.exports = (function () {
 		* The default method of connecting to an API. Returns an instance of this library
 		* and initializes a promise used to make requests on API endpoints.
 		*
-		* @param string url the API url base
-		* @param string key an API key, typically found in Logic Designer's Security section. When connecting
-		* with a username/password, this second argument is a username
-		* @param string password an optional argument when using liveapicreatorlogic.connect() with a user/password combination 
+		* @param string url the API url base e.g. http://localhost:8080/rest/default/demo/v1
+		* @param string key an API key, typically found in Logic Designer's Security section. 
+		 * When connecting  with a username/password, this second argument (key) is a username
+		 * When connecting with an APIKey - set the password to null or omit.
+		* @param string password an optional argument when using liveapicreatorsdk.connect() with a user/password combination 
 		*/
 		connect: function (url, key, password) {
 			var deferred, options, headers, liveapicreator;
@@ -137,7 +141,7 @@ module.exports = (function () {
 					deferred.reject('Authentication failed, please confirm the username and/or password');
 				});
 			} else {
-				//liveapicreatorlogic.connect() was directly passed an API key
+				//liveapicreatorsdk.connect() was directly passed an API key
 				liveapicreator.apiKey = key;
 				liveapicreator.params.headers.Authorization = 'CALiveAPICreator ' + key + ':1';
 				deferred.resolve();
@@ -152,7 +156,7 @@ module.exports = (function () {
 		},
 
 		/**
-		* Internal method used to merge default liveapicreatorlogic.params options with those passed in via params
+		* Internal method used to merge default liveapicreatorsdk.params options with those passed in via params
 		*/
 		setOptions: function (params, override) {
 			if (!override) {
@@ -162,7 +166,7 @@ module.exports = (function () {
 		},
 
 		/**
-		* Internal method for merging liveapicreatorlogic.headers attributes with those passed in via headers.
+		* Internal method for merging liveapicreatorsdk.headers attributes with those passed in via headers.
 		*
 		* @param object options a collection of URL.parse(url) attributes, which may or may not contain options.headers
 		* @param object headers a collection of header attributes to be appended to the request
@@ -177,7 +181,7 @@ module.exports = (function () {
 		},
 
 		/**
-		* Internal method for merging liveapicreatorlogic.filters attributes with those passed in via filters
+		* Internal method for merging liveapicreatorsdk.filters attributes with those passed in via filters
 		*/
 		setFilters: function (filters) {
 			filters = _.extend({}, this.filters, filters);
@@ -192,35 +196,44 @@ module.exports = (function () {
 		},
 
 		/**
-		* A method for stringifying a filters collection
+		* A method for stringifying a filters collection - use urlutils.js to escape your filters before sending 
 		*/
 		formatFilters: function (filters) {
-			if (typeof filters == "string") {
-				return filters.replace(" ", "%20");
-			}
-			else if (filters) {
-				filters = querystring.stringify(filters);
-			}
-			else {
-				filters = this.setFilters({});
-				filters = querystring.stringify(filters);
-			}
+			//if (typeof filters == "string") {
+			//	return filters.replace(" ", "%20");
+			//}
+			//if (filters) {
+			//	filters = querystring.stringify(filters);
+			//}
+			//else {
+			//	filters = this.setFilters({});
+			//	filters = querystring.stringify(filters);
+			//}
 			return filters;
 		},
 
 		/**
 		* The default method used to make requests to specific endpoints.
-		* liveapicreatorlogic.endpoint() returns an endpoint object with the following methods:
-		* liveapicreatorlogic.endpoint().get(filters, headers) - returning a promise of a GET request
-		* liveapicreatorlogic.endpoint().post(data, filters, headers) - returning a promise of a POST request
-		* liveapicreatorlogic.endpoint().put(data, filters, headers) - returning a promise of a PUT request
-		* liveapicreatorlogic.endpoint().del(data, filters, headers) - returning a promise of a DELETE request
+		* use urlutils.js to encode path and query segment.
+		* liveapicreatorsdk.endpoint() returns an endpoint object with the following methods:
+		* liveapicreatorsdk.endpoint().get(filters, headers) - returning a promise of a GET request
+		* liveapicreatorsdk.endpoint().post(data, filters, headers) - returning a promise of a POST request
+		* liveapicreatorsdk.endpoint().put(data, filters, headers) - returning a promise of a PUT request
+		* liveapicreatorsdk.endpoint().del(data, filters, headers) - returning a promise of a DELETE request
 		*/
 		endpoint: function (endpoint, options) {
 			var url, urlParams, prefix;
 			urlParams = {};
 			url = '';
 			prefix = '';
+			if (url && url.path && url.host) {
+				 urlParams = _.pick(URL.parse(url), 'host', 'path', 'port');
+				 //endpoint = '';
+				 if (this.isUrlWithPort(urlParams.host)) {
+					 urlParams.host = this.stripUrlPort(urlParams.host);
+				 }
+			 }
+			/*
 			if (endpoint.substr(0) != '/') {
 				url = URL.parse(endpoint);
 				//is this possibly a full url?
@@ -230,13 +243,16 @@ module.exports = (function () {
 					if (this.isUrlWithPort(urlParams.host)) {
 						urlParams.host = this.stripUrlPort(urlParams.host);
 					}
+					this.log("1. endpoint = "+endpoint);
 				}
 				else {
 					prefix = '/';
 					endpoint = prefix + this.stripWrappingSlashes(endpoint);
+					this.log("2. endpoint = "+endpoint);
 				}
 			}
-
+			*/
+			endpoint = "/" + this.stripWrappingSlashes(endpoint);
 			var liveapicreator = this;
 
 			return {
@@ -249,8 +265,8 @@ module.exports = (function () {
 						options = liveapicreator.setOptions({method: 'GET'}, urlParams);
 						options = liveapicreator.setHeaders(options, headers);
 
-						options.path += endpoint;
-						if (filters) {
+						options.path +=  endpoint;
+						if (filters && filters.length > 0) {
 							options.path += '?' + filters;
 						}
 						options.path = options.path.replace(/\%27/g, "'");
@@ -293,7 +309,7 @@ module.exports = (function () {
 						options = liveapicreator.setOptions({method: 'PUT'}, urlParams);
 						options = liveapicreator.setHeaders(options, headers);
 						options.path += endpoint;
-						if (filters) {
+						if (filters && filters.length > 0) {
 							options.path += '?' + filters;
 						}
 						options.path = options.path.replace(/\%27/g, "'");
@@ -328,14 +344,14 @@ module.exports = (function () {
 
 				post: function (body, filters, headers) {
 					var deferred;
-					deferred = Q.defer();
+					deferred = Q.defer();;
 					filters = liveapicreator.formatFilters(filters);
 					liveapicreator.connection.then(function () {
 						var options;
 						options = liveapicreator.setOptions({method: 'POST'}, urlParams);
 						options = liveapicreator.setHeaders(options, headers);
 						options.path += endpoint;
-						if (filters) {
+						if (filters && filters.length > 0) {
 							options.path += '?' + filters;
 						}
 						options.path = options.path.replace(/\%27/g, "'");
@@ -367,20 +383,23 @@ module.exports = (function () {
 					});
 					return deferred.promise;
 				},
-
+				
 				del: function (body, filters, headers) {
 					var deferred;
 					deferred = Q.defer();
 					if (!filters) {filters = {};}
-					filters.checksum = body['@metadata'].checksum;
-					filters = liveapicreator.formatFilters(filters);
 					liveapicreator.connection.then(function () {
 						var options;
 						options = liveapicreator.setOptions({method: 'DELETE'}, urlParams);
 						options = liveapicreator.setHeaders(options, headers);
+						
 						options.path += endpoint;
-						if (filters) {
+						if (filters && filters.length > 0) {
 							options.path += '?' + filters;
+						} else {
+							if(body && body.hasOwnProperty('@metadata')) {
+								options.path += '?' + "checksum="+body['@metadata'].checksum;
+							}
 						}
 						options.path = options.path.replace(/\%27/g, "'");
 						var req = liveapicreator.req.request(options, function (res) {
@@ -403,8 +422,8 @@ module.exports = (function () {
 								}
 							});
 						});
-						//req.end(JSON.stringify(body));
-						req.end();
+						req.end(JSON.stringify(body));
+						//req.end();
 
 						req.on('error', function(e) {
 							deferred.reject(e);

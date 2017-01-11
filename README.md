@@ -16,9 +16,22 @@ After installation, we invite you to give the library a try. Here we're connecti
 ```javascript
 'use strict';
 var apicreator = require('./APICreatorSDK');
-var api = apicreator.connect('http://localhost:8080/APIServer/rest/default/demo/v1', 'demo', 'Password1');
+var urlquery = require('./urlutil');
+var api = apicreator.connect('http://localhost:8080/rest/default/demo/v1', 'demo', 'Password1');
 api.endpoint('demo:customer').get().then(function (data) {
 	console.log(data);
+});
+```
+
+Use the urlutil.js library to encode the query segement (e.g. replace characters).
+```javascript
+'use strict';
+var apicreator = require('./APICreatorSDK');
+var urlquery = require('./urlutil');
+console.log("======use urlutil on query segment encode====");
+var filter = urlquery.encodeQuerySegment("equal(name:'Juliet Dating Inc.')");
+api.endpoint('demo:customer').get("sysfilter="+filter).then(function (data) {
+        console.log(data);
 });
 ```
 
@@ -29,64 +42,73 @@ Connecting to an existing project is done via the apicreator.connect() method. H
 ```javascript
 var apicreator, api;
 apicreator = require('./APICreatorSDK');
+var urlquery = require('./urlutil');
 
 //via a username and password
-api = apicreator.connect('https://localhost:8080/APIServer/rest/default/demo/v1', 'demo', 'Password1');
+api = apicreator.connect('https://localhost:8080/rest/default/demo/v1', 'demo', 'Password1');
 
 //or with an API key
-api = apicreator.connect('https://localhost:8080/APIServer/rest/default/demo/v1', 'readonly');
+api = apicreator.connect('https://localhost:8080/rest/default/demo/v1', 'readonly');
 ```
 
 API Creator builds an API around the tables and relationships it finds in your database. Once connected, your project endpoints are accessible in an easy to use format:
 
 ```javascript
 var apicreator, api;
-apicreator = require('.\APICreatorSDK');
+apicreator = require('./APICreatorSDK');
+var urlquery = require('./urlutil');
 
-//API endpoints follow a simple structure: {projectUrl}/{databasePrefix}:{tableName}
-//a full endpoint might look like this "https://eval.espressologic.com/rest/livedemo/demo/v1/customer"
-api = espressologic.connect('https://localhost:8080/APIServer/rest/default/demo/v1', 'demo', 'Password1');
+//API endpoints follow a simple structure: http[s]://{projectUrl[:port]}/rest/default/{project_url}/{version}/{endpoint}?[filter]
+//a full endpoint might look like this "https://eval.acme.com/rest/livedemo/demo/v1/customer"
+api = apicreator.connect('https://localhost:8080/rest/default/demo/v1', 'demo', 'Password1');
 
-var customers;
+var employee;
+employee = api.endpoint('demo:employee/1');
+employee.get().then(function (data) {
+	console.log(data); //an array of 1 object from the employee table using employee key "1"
+});
+```
+
+The customers.get() method refers to the http request method, and PUT/POST/DELETE requests will look very similar (though, for these requests, we invite you to register for a free download @ [CA Live API Creator](https://www.ca.com/us/trials/ca-live-api-creator.register.html)).
+
+```
+var api = apicreator.connect('http://localhost:8080/rest/default/demo/v1', 'demo', 'Password1');
+
+var customers, alphaCustomer;
 customers = api.endpoint('demo:customer');
-
-customers.get().then(function (data) {
-	console.log(data); //an array of objects from our customers table
-});
-```
-
-The customers.get() method refers to the http request method, and PUT/POST/DELETE requests will look very similar (though, for these requests, we invite you to register for an account @ [Espresso Logic](http://www.espressologic.com/)).
-
-```
-var customers, newCustomer;
-customers = api.endpoint('/customers');
+var custname =  "Alpha"+ (String(new Date())).substr(17);
 alphaCustomer = {
-    name: "Alpha",
-    credit_limit: "1234"
+    name: custname,
+    credit_limit: "1000"
 };
-
-//POST
-customers.post(alphaCustomer, params).then(function (txSummary) {
-	console.log(txSummary); //an array of objects updated
-});
-
-//GET
-customers.get().then(function (data) {
-	console.log(data); //an array which will now include customer: Alpha
-	
-	//objects returned include metadata specific to each record,
-	//the most useful to us here is the endpoint href
-    var alphaEndpoint = espressologic.endpoint(data[0]['@metadata'].href);
-	
-	//PUT
-    	data[0].name = 'Alpha Updated';
-    	alphaEndpoint.put(data[0]).then(function(txSummary) {
-    	    console.log(txSummary);
-	    });
-	    
-	//DELETE
-    	alphaEndpoint.delete(data[0]).then(function(txSummary) {
-    	    console.log(txSummary);
-	    });
-});
+//POST requires JSON data payload.
+//PUT requires JSON with @metadata.checksum (used by optimisitic locking)
+//DELETE requires passing in the key as part of the endpoint and a checksum value
+customers.post(alphaCustomer).then(function (txSummary) {
+   console.log("POST statusCode s/b 201 = "+ txSummary.statusCode); //txSummary an array of objects updated
+   //use urlutil on query segment to encode sysfilter
+   var filter = "sysfilter="+urlquery.encodeQuerySegment("equal(name:'"+custname+"')");
+   customers.get(filter).then(function (data) {
+		data[0].name = 'Alpha';
+		//console.log(data); //an array which will now include customer: Alpha
+	 	var alphaEndpoint = api.endpoint("demo:customer/Alpha");
+	 	alphaEndpoint.put(data[0]).then(function(txSummary) {
+			console.log("PUT statusCode s/b 200 = "+ txSummary.statusCode);
+			alphaEndpoint.get().then(function(data) {
+				//console.log(data);
+				console.log("GET data array of 1 = "+ data.length);
+		    	var checksum = "checksum="+data[0]["@metadata"].checksum;
+				//console.log("Get "+JSON.stringify(data[0]));
+				alphaEndpoint.del(data[0],checksum).then(function(txSummary) {
+					//console.log(txSummary);
+					console.log("DELETE statusCode s/b 200 = "+ txSummary.statusCode);
+				}).then(undefined, console.error);
+			}).then(undefined, console.error);
+	 	}).then(undefined, console.error);
+   	}).then(undefined, console.error);
+}).then(undefined, console.error);
+POST statusCode s/b 201 = 201
+PUT statusCode s/b 200 = 200
+GET data array of 1 = 1
+DELETE statusCode s/b 200 = 200
 ```
