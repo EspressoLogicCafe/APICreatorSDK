@@ -2,7 +2,7 @@
 var apicreator = require('./APICreatorSDK');
 var urlquery = require('./urlutil');
 
-var api = apicreator.connect('http://localhost:8080/rest/default/demo/v1', 'demo', 'Password1');
+var api = apicreator.connect('http://localhost:8080/APIServer/rest/default/demo/v1', 'demo', 'Password1');
 
 console.log('api connected t0 server');
 
@@ -13,6 +13,10 @@ alphaCustomer = {
     name: custname,
     credit_limit: "1000"
 };
+console.log("==========GET Example ==============");
+api.endpoint('demo:customer').get().then(function (data) {
+	console.log("s/b 21: "+ data.length);
+});
 
 //Nested POST -> PUT -> GET -> DELETE
 customers.post(alphaCustomer).then(function (txSummary) {
