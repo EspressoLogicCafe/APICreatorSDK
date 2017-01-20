@@ -1,6 +1,6 @@
 {
   "name": "APICreatorSDK",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "A rapid development node sdk for API's for CA Live API Creator REST API services.",
   "main": "APICreatorSDK.js",
   "scripts": {
@@ -31,7 +31,6 @@
   "preferGlobal": "true",
   "bin": {
     "APICreatorSDK" : "APICreatorSDK.js",
-    "apicreatorsdk" : "APICreatorSDK.js",
     "liveapicreatorsdk" : "APICreatorSDK.js",
     "caliveapicreatorsdk" : "APICreatorSDK.js"
   },

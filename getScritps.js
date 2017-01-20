@@ -2,17 +2,19 @@ var apicreator = require('./APICreatorSDK');
 var urlquery = require('./urlutil');
 //setup your server and source and target project information
 var server = 'http://localhost:8080/APIServer';
-var source_project = 'demo'; //Source Project url fragment
-var target_project = 'test';// Target Project url fragment
-var project_prefix = 'demo';//Source Project Datasource prefix
-var target_prefix = "ldgiw"; //Managed Data Server Datasource Prefix on Target Project
+var source_project = 'banking'; //Source Project url fragment
+var target_project = 'banking';// Target Project url fragment
+var project_prefix = 'main';//Source Project Datasource prefix
+var target_prefix = "bank"; //Managed Data Server Datasource Prefix on Target Project
+// This is a script generator - it will export a project, schema, and data and then script the import of the schema (tables first),
+// data, and then relationships
 
 //connect to project and get list of all tables using prefix
 var api = apicreator.connect(server + '/rest/default/' + source_project + '/v1', 'demo', 'Password1');
 
 console.log("#STEP 1 export schema");
 console.log('lac login -u demo -p Password1 '+ server + '/rest/default/' + source_project + '/v1');
-console.log("lac schema export --prefix "+project_prefix +" --file SCHEMA.JSON");
+console.log("lac schema export --prefix "+project_prefix +" --file SCHEMA_"+source_project+".JSON");
 
 var tables = api.endpoint('@tables');
 tables.get().then(function (data) {
@@ -37,8 +39,8 @@ tables.get().then(function (data) {
 	console.log("# --ignoreprimarykeyname true");
 	console.log("#STEP 4 PHASE 1 - SCHEMA CREATE TABLES ");
 	console.log("#### OPTIONAL lacadmin project import --file PROJECT_"+source_project+".JSON");
-	console.log("#Create a managed datasource ans use this for your --prefix below");
-	console.log("lacadmin schema create --skipRelationships true --skipTableCreation false --ignoredbcolumntype false --ignoreprimarykeyname false --file SCHEMA.json --prefix "+target_prefix);
+	console.log("### Create a managed datasource ans use this for your --prefix below");
+	console.log("lacadmin schema create --skipRelationships true --skipTableCreation false --ignoredbcolumntype false --ignoreprimarykeyname false --file SCHEMA_"+source_project+".json --prefix "+target_prefix);
 	//START IMPORT PROCESS HERE
 	console.log('lac login -u demo -p Password '+ server + '/rest/default/' + target_project + '/v1');
 
@@ -53,7 +55,7 @@ tables.get().then(function (data) {
 	console.log("#if you are switch databases - include these flags in Schema Create");
 	console.log("# --ignoreconstraintname true");
 	console.log("#STEP 6 PHASE 2 - SCHEMA CREATE RELATIONSHIPS");
-	console.log("lacadmin schema create --skipRelationships false --skipTableCreation true --ignoreconstraintname false --file SCHEMA.json --prefix "+target_prefix);
+	console.log("lacadmin schema create --skipRelationships false --skipTableCreation true --ignoreconstraintname false --file SCHEMA_"+source_project+".json --prefix "+target_prefix);
 	console.log("lacadmin logout");
 	console.log("lac logout");
 
