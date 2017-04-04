@@ -1,5 +1,5 @@
 'use strict';
-var apilivecreator = require('./APICreatorSDK');
+var apilivecreator = require('../APICreatorSDK');
 
 
 //API endpoints follow a simple structure: {projectUrl}/{databasePrefix}:{tableName}

@@ -9,7 +9,7 @@ module.exports = (function () {
 
 	SDK = {
 		/**
-		* 	CA Live API Creator SDK from CA Technologies, Inc.  2017 (c)
+		* 	CA Live API Creator SDK from CA Technologies, Inc.  2016, 2017 (c)
 		*/
 		debug: false,
 		/**
@@ -105,7 +105,6 @@ module.exports = (function () {
 			liveapicreator.url = this.stripWrappingSlashes(url);
 			liveapicreator.params = _.pick(URL.parse(url), 'host', 'path', 'port');
 			liveapicreator.params.headers = {};
-
 
 			if (url.match('https')) {
 				liveapicreator.req = https;

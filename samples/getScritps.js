@@ -1,5 +1,5 @@
-var apicreator = require('./APICreatorSDK');
-var urlquery = require('./urlutil');
+var apicreator = require('../APICreatorSDK');
+var urlquery = require('../urlutil');
 //setup your server and source and target project information
 var server = 'http://localhost:8080/APIServer';
 var source_project = 'banking'; //Source Project url fragment

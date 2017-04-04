@@ -1,26 +1,33 @@
 {
   "name": "APICreatorSDK",
-  "version": "1.4.6",
-  "description": "A rapid development node sdk for API's for CA Live API Creator REST API services.",
+  "version": "1.4.10",
+  "description": "A rapid development NodeJS SDK for API's using CA Live API Creator REST API services.",
   "main": "APICreatorSDK.js",
   "scripts": {
-    "test": "grunt eslo-unit"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/EspressoLogicCafe/APICreatorSDK.git"
   },
   "keywords": [
-    "CA Live API Creator",
+    "CA Technologies",
+    "caliveapicreator",
+    "API Server",
+    "APIM",
+    "Data Explorer",
+    "logic",
+    "command",
+    "line",
     "REST",
     "API",
     "RESTful",
     "database",
-    "sql",
+    "SDK",
     "mysql",
     "oracle",
     "nosql",
-    "postgres",
+    "postgresql",
     "mongo",
     "sqlserver",
     "db2luw",
@@ -34,8 +41,8 @@
     "liveapicreatorsdk" : "APICreatorSDK.js",
     "caliveapicreatorsdk" : "APICreatorSDK.js"
   },
-  "author": "CA Technologies",
-  "license": "MIT",
+  "author": "CA Technologies APIM",
+  "license": "Apache",
   "bugs": {
     "url": "https://github.com/EspressoLogicCafe/APICreatorSDK/issues"
   },

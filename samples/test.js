@@ -1,8 +1,8 @@
 'use strict';
-var apicreator = require('./APICreatorSDK');
-var urlquery = require('./urlutil');
+var apicreator = require('../APICreatorSDK');
+var urlquery = require('../urlutil');
 
-var api = apicreator.connect('http://localhost:8080/APIServer/rest/default/demo/v1', 'demo', 'Password1');
+var api = apicreator.connect('http://localhost:8080/rest/default/demo/v1', 'demo', 'Password1');
 
 console.log('api connected t0 server');
 

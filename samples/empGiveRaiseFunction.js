@@ -2,11 +2,11 @@
 // arg[2] is derby or mysql
 // arg[3] is http://localhost:8080/rest/default
 // eg, from b2b folder: node ./scs/projects/test/node/empGiveRaiseFunction.js derby http://localhost:8080/rest/default
+// Using the Jetty sample - create a Northwind demo sample and change the url prefix to 'nw'
+//Example: $node empGiveRaiseFunction.js derby http://localhost:8080/rest/default/nw/v1
 
-// TODO https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions
-
-var apicreator = require('./APICreatorSDK');
-var urlutils = require('./urlutil');
+var apicreator = require('../APICreatorSDK');
+var urlutils = require('../urlutil');
 
 // essentially: return apicreator.connect(urlNwAPI, 'demo', 'Password1');
 console.log(process.argv[3]);
