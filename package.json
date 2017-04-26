@@ -1,6 +1,6 @@
 {
   "name": "APICreatorSDK",
-  "version": "1.4.10",
+  "version": "1.4.11",
   "description": "A rapid development NodeJS SDK for API's using CA Live API Creator REST API services.",
   "main": "APICreatorSDK.js",
   "scripts": {
