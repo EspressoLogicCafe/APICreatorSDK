@@ -1,8 +1,10 @@
 ##CA Live API Creator NodeJS SDK
-[CA Live API Creator](http://transform.ca.com/CA-Live-API-Creator.html) is the fastest way to create REST APIs across your various data sources including SQL and NoSQL databases. You can join data across multiple data sources and write declarative/reactive programming rules that are adhered to by your REST API. Security access for resources can be as broad or granular as needed, from complete access to row and column level control. And it all deploys in the time it's taken to read about it. For more information about this SDK, please visit our [doc center](https://docops.ca.com/ca-live-api-creator/3-1/en/invoking-apis/use-node-sdk).
+[CA Live API Creator](http://transform.ca.com/CA-Live-API-Creator.html) 
+Create low-code APIs and microservices with enterprise-grade security and top-class speed and agility. 
+For more information about this SDK, please visit our [doc center](https://docops.ca.com/ca-live-api-creator/4-1/en/invoking-apis/use-node-sdk/).
 
-### Installation
-The SDK library is installed as we might expect, from a simple npm install command:
+### Node and SDK Installation
+Make sure you have installed and configured NodeJS first. The SDK library is installed as we might expect, from a simple npm install command:
 Note: (MAC users may need to do sudo npm install APICreatorSDK -g)
 
 ```
