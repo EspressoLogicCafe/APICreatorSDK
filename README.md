@@ -1,8 +1,9 @@
-##CA Live API Creator
+##CA Live API Creator NodeJS SDK
 [CA Live API Creator](http://transform.ca.com/CA-Live-API-Creator.html) is the fastest way to create REST APIs across your various data sources including SQL and NoSQL databases. You can join data across multiple data sources and write declarative/reactive programming rules that are adhered to by your REST API. Security access for resources can be as broad or granular as needed, from complete access to row and column level control. And it all deploys in the time it's taken to read about it. For more information about this SDK, please visit our [doc center](https://docops.ca.com/ca-live-api-creator/3-1/en/invoking-apis/use-node-sdk).
 
 ### Installation
 The SDK library is installed as we might expect, from a simple npm install command:
+Note: (MAC users may need to do sudo npm install APICreatorSDK -g)
 
 ```
 npm install APICreatorSDK -g
@@ -11,7 +12,7 @@ npm install APICreatorSDK -g
 
 ### Up and Running
 
-After installation, we invite you to give the library a try. Here we're connecting to a sample project, but the data and API are all real:
+After installation, we invite you to give the library a try. Here we're connecting to a local project, but the data and API are all real:
 
 ```javascript
 'use strict';
@@ -37,7 +38,8 @@ api.endpoint('demo:customer').get("sysfilter="+filter).then(function (data) {
 
 ### Getting Started
 
-Connecting to an existing project is done via the apicreator.connect() method. Here we are connecting to a sample API which is available as a sandbox for exploring the basics:
+Connecting to an existing project is done via the apicreator.connect() method. Here we are connecting to a sample API 
+which is available as a sandbox for exploring the basics:
 
 ```javascript
 var apicreator, api;
@@ -51,7 +53,8 @@ api = apicreator.connect('https://localhost:8080/rest/default/demo/v1', 'demo', 
 api = apicreator.connect('https://localhost:8080/rest/default/demo/v1', 'readonly');
 ```
 
-API Creator builds an API around the tables and relationships it finds in your database. Once connected, your project endpoints are accessible in an easy to use format:
+API Creator can build an API around the tables and relationships it finds in your database. 
+Once connected, your API endpoints are accessible in an easy to use REST calls:
 
 ```javascript
 var apicreator, api;
